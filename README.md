@@ -7,7 +7,12 @@
 
 
 
-Group Members: Phong, Alec, Gabe, Vunsh, Meshach
+Group Members: 
+Phong, 
+Alec, 
+Gabe, GabrielBoudreau
+Vunsh, 
+Meshach
 
 
 Selected Software: Car Rental System
