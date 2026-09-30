@@ -7,4 +7,4 @@
 
 
 
-Group Memebers: Phong, Alec, Gabe, Vunsch, Mesach
+Group Members: Phong, Alec, Gabe, Vunsch, Mesach
