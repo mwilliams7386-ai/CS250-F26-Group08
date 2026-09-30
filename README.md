@@ -8,3 +8,6 @@
 
 
 Group Members: Phong, Alec, Gabe, Vunsh, Meshach
+
+
+Selected Software: Car Rental System
