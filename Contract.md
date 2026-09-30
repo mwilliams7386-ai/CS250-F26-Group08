@@ -24,12 +24,13 @@ We will meet virtually through discord on times that are agreed upon at the begi
 ### Who will be responsible for final submissions:
 The project manager will be responsible for the final submission. 
 
-Name	      GitHub username    	Date
-Phong Tran	[username]	[date]
-Alec Schu	[username]	[date]
-Gabe Bourdeau [username]	[date]
-Meshach Williams	09/29/2026
-
+| Name | GitHub Username | Date |
+|---|---|---|
+| Phong Tran | [username] | [date] |
+| Alec Schu | [username] | [date] |
+| Gabe Bourdeau | [username] | [date] |
+| Meshach Williams |  | 09/29/2026 |
+| Vunsh Mehta | vunsh | 09/29/2026 |
 
 
 
