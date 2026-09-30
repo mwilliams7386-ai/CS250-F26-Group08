@@ -8,10 +8,15 @@
 
 
 Group Members: 
-Phong, 
+
+Phong,
+
 Alec, 
+
 Gabe, GabrielBoudreau
+
 Vunsh, 
+
 Meshach
 
 
