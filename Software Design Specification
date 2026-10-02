@@ -29,9 +29,27 @@ process.
 Software Architecture Overview
   Architectural diagram of all major components
 
+```text
+[ Mobile App / Web App ] 
+         |  (HTTPS / REST)
+         v
+[ API Gateway / Router ]
+         |
+  +------+------+------+
+  |             |      |
+[Auth]       [Fleet] [Rentals]
+  |             |      |
+  +------+------+------+
+         |
+         v
+[ PostgreSQL Database ] + [ Encrypted PDF Storage ]
+
+
+
 
   UML Class Diagram
-  +-----------------------+           1..* +------------------------+
+```text
++-----------------------+           1..* +------------------------+
 |         User          | <--------------|      PaymentMethod     |
 +-----------------------+                +------------------------+
 | - userID: String      |                | - paymentID: String    |
@@ -59,6 +77,9 @@ Software Architecture Overview
                                          | - make: String         |
                                          | - status: VehicleStatus|
                                          +------------------------+
+
+
+'''
 
 ## Description of Classes, Attributes, and Operations
 
