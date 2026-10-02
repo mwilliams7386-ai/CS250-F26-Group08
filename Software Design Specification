@@ -31,60 +31,67 @@ Software Architecture Overview
 
 
   UML Class Diagram
-                 +------------------------------------------+
-                 |           Car Rental System              |
-                 |                                          |
-                 |   ( Look up customers )                  |
-    O            |   ( Review rental status )               |
-   -|-  ---------|-- ( Review customer contracts )          |
-   / \           |   ( View vehicle fleet )                 |
- Employee        |   ( Update vehicle status )              |
-                 |                                          |
-                 |   ( Log in )                             |
-    O            |   ( Manage payment methods )             |
-   -|-  ---------|-- ( Find rental location )               |
-   / \           |   ( Make a rental )                      |
- Customer        |   ( Sign agreements )                    |
-                 |                                          |
-                 +------------------------------------------+
-                       +-----------------------------------+
-                       |        Car Rental System          |
-                       |                                   |
-                  +----|-->( Look up customers )           |
-                  +----|-->( Review rental status )        |
-     O            |    |                                   |
-    -|-  ---------+----|-->( Review customer contracts )   |
-    / \           |    |                                   |
-  Employee        +----|-->( View vehicle fleet )          |
-                  +----|-->( Update vehicle status )       |
-                       |                                   |
-                  +----|-->( Log in )                      |
-                  +----|-->( Manage payment methods )      |
-     O            |    |                                   |
-    -|-  ---------+----|-->( Find rental location )        |
-    / \           |    |                                   |
-  Customer        +----|-->( Make a rental )               |
-                  +----|-->( Sign agreements )             |
-                       |                                   |
-                       +-----------------------------------+
+  +-----------------------+           1..* +------------------------+
+|         User          | <--------------|      PaymentMethod     |
++-----------------------+                +------------------------+
+| - userID: String      |                | - paymentID: String    |
+| - email: String       |                | - cardToken: String    |
+| - passwordHash: String|                +------------------------+
++-----------------------+                            ^
+            ^                                        | 1
+            | (Inheritance)                          |
+     +------+------+                                 | 1
+     |             |                                 v
++----------+ +----------+  1        1..* +------------------------+
+| Customer | | Employee | -------------> |   RentalReservation    |
++----------+ +----------+                +------------------------+
+| - phone  | | - empID  |                | - reservationID: String|
+| - 2faOn  | | - role   |                | - startDate: Date      |
++----------+ +----------+                | - status: ResStatus    |
+                                         +------------------------+
+                                                     | 1..*
+                                                     |
+                                                     v 1
+                                         +------------------------+
+                                         |        Vehicle         |
+                                         +------------------------+
+                                         | - vehicleID: String    |
+                                         | - make: String         |
+                                         | - status: VehicleStatus|
+                                         +------------------------+
 
-  Description of classes
+## Description of Classes, Attributes, and Operations
 
+### 1. User (Parent Class)
+* **Attributes:** `userID: String`, `email: String`, `passwordHash: String`
+* **Operations:** `login(email: String, password: String): Boolean`, `verifyEmail(code: String): Boolean`
 
-  Description of attributes
+### 2. Customer (Extends User)
+* **Attributes:** `phoneNumber: String`, `is2FAEnabled: Boolean`
+* **Operations:** `enable2FA(secret: String): Boolean`, `searchNearbyVehicles(lat: Double, long: Double): List<Vehicle>`
 
+### 3. Employee (Extends User)
+* **Attributes:** `employeeID: String`, `departmentRole: String`
+* **Operations:** `updateVehicleStatus(vehicleID: String, status: String): Void`, `reviewContract(resID: String): Contract`
 
-  Description of operations
+### 4. Vehicle
+* **Attributes:** `vehicleID: String`, `make: String`, `model: String`, `status: String`, `latitude: Double`, `longitude: Double`
+* **Operations:** `setMaintenance(status: String, notes: String): Void`, `isAvailable(start: Date, end: Date): Boolean`
 
+### 5. RentalReservation
+* **Attributes:** `reservationID: String`, `startDate: Date`, `endDate: Date`, `totalCost: Double`
+* **Operations:** `calculateTotal(rate: Double, days: Int): Double`, `signContract(signature: Byte[]): Boolean`
 
-* descriptions should be detailed and specify datatypes, function interfaces, parameters, etc..
+---
 
+## Development Plan and Timeline
 
-
-Development plan and timeline
-
-Partitioning of tasks
-
-
-Team member responsibilities
+| Task Name | Assigned To | Completion Date |
+| :--- | :--- | :--- |
+| Requirements & Design Spec | Alec, Vunsh, Gabe, Meshach, Phong | Week 6 |
+| Database & Login API | Alec & Vunsh | Week 9 |
+| GPS & Fleet Search API | Gabe & Meshach | Week 11 |
+| Contracts & Payment Tokenization | Phong & Alec | Week 13 |
+| Mobile & Web Frontend UI | Vunsh & Gabe | Week 14 |
+| Final Testing & Report Submission | All Team Members | Week 16 |
   
