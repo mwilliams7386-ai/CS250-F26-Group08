@@ -32,7 +32,42 @@ Software Architecture Overview
 
 
   UML Class Diagram
-
+                 +------------------------------------------+
+                 |           Car Rental System              |
+                 |                                          |
+                 |   ( Look up customers )                  |
+    O            |   ( Review rental status )               |
+   -|-  ---------|-- ( Review customer contracts )          |
+   / \           |   ( View vehicle fleet )                 |
+ Employee        |   ( Update vehicle status )              |
+                 |                                          |
+                 |   ( Log in )                             |
+    O            |   ( Manage payment methods )             |
+   -|-  ---------|-- ( Find rental location )               |
+   / \           |   ( Make a rental )                      |
+ Customer        |   ( Sign agreements )                    |
+                 |                                          |
+                 +------------------------------------------+
+                       +-----------------------------------+
+                       |        Car Rental System          |
+                       |                                   |
+                  +----|-->( Look up customers )           |
+                  +----|-->( Review rental status )        |
+     O            |    |                                   |
+    -|-  ---------+----|-->( Review customer contracts )   |
+    / \           |    |                                   |
+  Employee        +----|-->( View vehicle fleet )          |
+                  +----|-->( Update vehicle status )       |
+                       |                                   |
+                  +----|-->( Log in )                      |
+                  +----|-->( Manage payment methods )      |
+     O            |    |                                   |
+    -|-  ---------+----|-->( Find rental location )        |
+    / \           |    |                                   |
+  Customer        +----|-->( Make a rental )               |
+                  +----|-->( Sign agreements )             |
+                       |                                   |
+                       +-----------------------------------+
 
   Description of classes
 
