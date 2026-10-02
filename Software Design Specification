@@ -1,15 +1,36 @@
 Title page
-  Software title: BeAvis Car Rental System
-  Team members: Alec, Vunsh, Gabe, Meshach, Phong
+  Software title: 
+      BeAvis Car Rental System
+  Team members: 
+      Alec, Vunsh, Gabe, Meshach, Phong
+
   System Description:
-    
+      BeAvis is a car rental company that currently is using a pen-and-paper rental process for
+processing their car. The purpose of this system is to replace the manual process with a
+software system that makes renting vehicles more efficient and convenient. Embedding this
+system will smooth the process of renting vehicles which is essential to day-to-day management
+of the company.
+
+  Brief overview of system
+      The system should be compatible with the latest version of either IOS or Android. It should also
+be compatible and easily integrated into websites and applications. Customers will be able to
+create an account, locate BeAvis locations, search through BeAvis vehicle catalogs, make
+rentals, sign any legal rental documents, and log their information into their account. Within the
+company, employees will be able to view customers' requests for rentals, review contracts, view
+what cars are available for customers, and update the availability of the fleet.
+The primary users that this system will affect are the BeAvis customers and employees.
+Customers will enjoy a more convenient process for renting vehicles and interacting with the
+company. Employees will have an easy to manage system that will allow them to manage
+customer information and cars. This will essentially be a centralized system for employees to
+access and manage information with customers in an orderly way, unlike the pen-and-paper
+process.
 
 
-Brief overview of system
-  Software Architecture Overview
+
+Software Architecture Overview
+  Architectural diagram of all major components
 
 
-Architectural diagram of all major components
   UML Class Diagram
 
 
