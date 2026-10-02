@@ -92,16 +92,16 @@ Software Architecture Overview
 * **Operations:** `enable2FA(secret: String): Boolean`, `searchNearbyVehicles(lat: Double, long: Double): List<Vehicle>`
 
 ### 3. Employee (Extends User)
-* **Attributes:** `employeeID: String`, `departmentRole: String`
+* **Attributes:** `employeeID: String`, `departmentRole: String`, `currentTask: String`
 * **Operations:** `updateVehicleStatus(vehicleID: String, status: String): Void`, `reviewContract(resID: String): Contract`
 
 ### 4. Vehicle
-* **Attributes:** `vehicleID: String`, `make: String`, `model: String`, `status: String`, `latitude: Double`, `longitude: Double`
+* **Attributes:** `vehicleID: String`, `make: String`, `model: String`, `status: String`, `latitude: Double`, `longitude: Double`, 
 * **Operations:** `setMaintenance(status: String, notes: String): Void`, `isAvailable(start: Date, end: Date): Boolean`
 
 ### 5. RentalReservation
-* **Attributes:** `reservationID: String`, `startDate: Date`, `endDate: Date`, `totalCost: Double`
-* **Operations:** `calculateTotal(rate: Double, days: Int): Double`, `signContract(signature: Byte[]): Boolean`
+* **Attributes:** `reservationID: String`, `startDate: Date`, `endDate: Date`, `totalCost: Double`, `startCondition: String`, `endCondition: String`
+* **Operations:** `calculateTotal(rate: Double, days: Int): Double`, `signContract(signature: Byte[]): Boolean`, `conditionControl(damage: String): Void`
 
 ---
 
@@ -111,7 +111,7 @@ Software Architecture Overview
 | :--- | :--- | :--- |
 | Requirements & Design Spec | Alec, Vunsh, Gabe, Meshach, Phong | Week 6 |
 | Database & Login API | Alec & Vunsh | Week 9 |
-| GPS & Fleet Search API | Gabe & Meshach | Week 11 |
+| GPS & Fleet Search API | Gabe & Meshach & Phong| Week 11 |
 | Contracts & Payment Tokenization | Phong & Alec | Week 13 |
 | Mobile & Web Frontend UI | Vunsh & Gabe | Week 14 |
 | Final Testing & Report Submission | All Team Members | Week 16 |
