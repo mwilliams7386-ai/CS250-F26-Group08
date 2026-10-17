@@ -189,13 +189,16 @@ document.
 ### 2. Customer (Extends User)
 
 -   **Purpose:** Represents a customer who searches for vehicles and
-    makes rental reservations.
+                 makes rental reservations.
 -   **Attributes:** `phoneNumber: String`, `is2FAEnabled: Boolean`
     -   `phoneNumber` stores the customer's contact number.
 -   **Operations:**
     -   `searchNearbyVehicles(lat: Double, long: Double): List<Vehicle>`
-        --- finds vehicles near the provided latitude and longitude and
-        returns matching vehicles.
+           - finds vehicles near the provided latitude and longitude and
+             returns matching vehicles.
+    -  lookUpCustomer(query: String): Customer
+           - finds a customer’s basic account information to verify their
+             identity at pickup
 
 ### 3. Employee (Extends User)
 
@@ -225,7 +228,7 @@ document.
     -   `make` and `model` identify the vehicle.
     -   `status` records whether the vehicle is available, reserved, or
         in maintenance.
-    -   `latitude` and `longitude` record the vehicle's location.
+    -   `locationID: String` the BeAvis location where the vehicle is kept
 -   **Operations:**
     -   `setMaintenance(status: VehicleStatus, notes: String): Boolean`
         --- updates the vehicle's maintenance status and notes,
@@ -242,6 +245,7 @@ document.
     `endDate: Date`, `totalCost: Double`, `startCondition: String`,
     `endCondition: String`, `status: ReservationStatus`,
     `vehicleID: String`, `paymentID: String`
+    `customerID: String` 
     -   `reservationID` uniquely identifies the reservation.
     -   `startDate` and `endDate` specify when the rental begins and
         ends.
@@ -257,7 +261,7 @@ document.
         the rental cost from the daily rate and number of days.
     -   `signContract(signature: Byte[]): Boolean` --- submits the
         customer's electronic signature for the rental contract and
-        returns whether it is recorded successfully.
+        returns whether it is recorded successfully. Calls recordSignature()
     -   `recordCondition(damage: String, isStartCondition: Boolean): Boolean`
         --- records condition or damage notes for pickup or return,
         based on the Boolean value.
@@ -271,6 +275,7 @@ document.
 -   **Attributes:** `paymentID: String`, `cardToken: String`,
     `billingPostalCode: String`
     -   `paymentID` uniquely identifies the saved payment method.
+    -   `customerID: String` customer who the payment belongs to
     -   `cardToken` is a token from the payment provider used to
         reference the payment method without storing the full card
         number.
