@@ -63,23 +63,23 @@ are represented by a payment token rather than a full card number.
 
 UML Class Diagram
 
-                        +---------------------------------------+
-                        |                  User                 |            +------------------------+
-                        +---------------------------------------+            |      ChatMessage       |
-                        | - userID: String                      |            +------------------------+
-                        | - email: String                       |            | - messageID: String    |
-                        | - passwordHash: String                |            | - senderID: String     |
-                        | - is2FAEnabled: Boolean               | 1     0..* | - recipientID: String  |
-                        +---------------------------------------+------------| - text: String         |
-                        | + login(email: String,                |    sends   | - sentAt: Date         |
-                        |     password: String): Boolean        |            +------------------------+
-                        | + verifyEmail(code: String): Boolean  |            | + send(): Boolean      |
-                        | + enable2FA(secret: String): Boolean  |            +------------------------+
-                        +---------------------------------------+
-                                            ^
-                                            | (inheritance)
-                                            |
-                   +------------------------+--------------------------+
+                          +---------------------------------------+
+                          |                  User                 |
+                          +---------------------------------------+
+                          | - userID: String                      |
+                          | - email: String                       |
+                          | - passwordHash: String                |
+                          | - is2FAEnabled: Boolean               |
+                          +---------------------------------------+
+                          | + login(email: String,                |
+                          |     password: String): Boolean        |
+                          | + verifyEmail(code: String): Boolean  |
+                          | + enable2FA(secret: String): Boolean  |
+                          +---------------------------------------+
+                                              ^
+                                              | (inheritance)
+                                              |
+                   +--------------------------+------------------------+
                    |                                                   |
 +--------------------------------------+              +----------------------------------+
 |               Employee               |              |             Customer             |
