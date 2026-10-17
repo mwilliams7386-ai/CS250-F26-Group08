@@ -1,118 +1,321 @@
-Title page
-  Software title: 
-      BeAvis Car Rental System
-  Team members: 
-      Alec, Vunsh, Gabe, Meshach, Phong
+Title page Software title: BeAvis Car Rental System Team members: Alec,
+Vunsh, Gabe, Meshach, Phong
 
-  System Description:
-      BeAvis is a car rental company that currently is using a pen-and-paper rental process for
-processing their car. The purpose of this system is to replace the manual process with a
-software system that makes renting vehicles more efficient and convenient. Embedding this
-system will smooth the process of renting vehicles which is essential to day-to-day management
-of the company.
+System Description: BeAvis is a car rental company that currently is
+using a pen-and-paper rental process for processing their cars. The
+purpose of this system is to replace the manual process with a software
+system that makes renting vehicles more efficient and convenient.
+Embedding this system will smooth the process of renting vehicles, which
+is essential to the day-to-day management of the company.
 
-  Brief overview of system:
-      The system will be compatible with the latest version of either IOS or Android. The system 
-will also be able and easily integrated into websites and applications. Customers will be able to
-create an account, locate BeAvis locations, search through BeAvis vehicle catalogs, make
-rentals, sign any legal rental documents, and log their information into their account. 
-      Within the company, employees will be able to view customers' requests for rentals, review 
-contracts, view what cars are available for customers, and update the availability of the fleet.
-The primary users that this system will affect are the BeAvis customers and employees.
-Customers will enjoy a more convenient process for renting vehicles and interacting with the
-company. Employees will have an easy to manage system that will allow them to manage
-customer information and cars. This will essentially be a centralized system for employees to
-access and manage information with customers in an orderly way, unlike the pen-and-paper
-process.
+Brief overview of system: The system will be compatible with the latest
+version of either iOS or Android. The system will also be able to
+integrate easily into websites and applications. Customers will be able
+to create an account, locate BeAvis locations, search through BeAvis
+vehicle catalogs, make rentals, sign legal rental documents, and log
+their information into their account. Within the company, employees will
+be able to view customers' requests for rentals, review contracts, view
+what cars are available for customers, and update the availability of
+the fleet. The primary users that this system will affect are BeAvis
+customers and employees. Customers will enjoy a more convenient process
+for renting vehicles and interacting with the company. Employees will
+have an easy-to-manage system that will allow them to manage customer
+information and cars. This will essentially be a centralized system for
+employees to access and manage information with customers in an orderly
+way, unlike the pen-and-paper process.
 
+------------------------------------------------------------------------
 
 Software Architecture Overview
-  Architectural diagram of all major components
 
-```text
-[ Mobile App / Web App ] 
-         |  (HTTPS / REST)
-         v
-[ API Gateway / Router ]
-         |
-  +------+------+------+
-  |             |      |
-[Auth]       [Fleet] [Rentals]
-  |             |      |
-  +------+------+------+
-         |
-         v
-[ PostgreSQL Database ] + [ Encrypted PDF Storage ]
+Architectural diagram of all major components
 
+``` text
+[ Mobile App / Web App ]             [ Employee Interface ]
+         |                                      |
+         +--------------- HTTPS / REST --------+
+                            |
+                  [ API Gateway / Router ]
+                            |
+             +--------------+--------------+
+             |              |              |
+          [Auth]          [Fleet]       [Rentals]
+             |              |              |
+             +--------------+--------------+
+                            |
+                    [ Data Access Layer ]
+                            |
+                [ PostgreSQL Database ]
+                            |
+                [ Encrypted PDF Storage ]
+```
 
+Architecture explanation: The mobile app, web app, and employee
+interface send requests to the API Gateway using HTTPS and REST. The API
+Gateway routes requests to the correct backend service. Auth manages
+account sign-in and authentication, Fleet manages vehicle records and
+availability, and Rentals manages reservations and rental contracts.
+These services use the data access layer to read and update information
+in the PostgreSQL database. Signed rental PDFs are kept in encrypted
+document storage, while the database stores the related reservation and
+document references. Passwords are stored as hashes, and payment details
+are represented by a payment token rather than a full card number.
 
+UML Class Diagram
 
-  UML Class Diagram
-```text
-+-----------------------+           1..* +------------------------+
-|         User          | <--------------|      PaymentMethod     |
-+-----------------------+                +------------------------+
-| - userID: String      |                | - paymentID: String    |
-| - email: String       |                | - cardToken: String    |
-| - passwordHash: String|                +------------------------+
-+-----------------------+                            ^
-            ^                                        | 1
-            | (Inheritance)                          |
-     +------+------+                                 | 1
-     |             |                                 v
-+----------+ +----------+  1        1..* +------------------------+
-| Customer | | Employee | -------------> |   RentalReservation    |
+``` text
++------------------------+           1       +------------------------+
+|          User          |-------------------|     PaymentMethod      |
++------------------------+                    +------------------------+
+| - userID: String       |                    | - paymentID: String    |
+| - email: String        |                    | - cardToken: String    |
+| - passwordHash: String |                    | - billingPostalCode: String |
++------------------------+                    +------------------------+
+| + login(email: String, |                    | + validateToken(): Boolean |
+|   password: String): Boolean               | + updateBillingAddress( |
+| + verifyEmail(code: String): Boolean       |   postalCode: String): Boolean |
++------------------------+                    +------------------------+
+          ^                                               ^
+          | (Inheritance)                                 | used by
+     +----+-----+                                         |
+     |          |                                         |
++----------+ +----------+  1        0..* +------------------------+
+| Customer | | Employee |----------------|   RentalReservation    |
 +----------+ +----------+                +------------------------+
-| - phone  | | - empID  |                | - reservationID: String|
-| - 2faOn  | | - role   |                | - startDate: Date      |
-+----------+ +----------+                | - status: ResStatus    |
+| - phoneNumber: String| | - employeeID: String | - reservationID: String |
+| - is2FAEnabled: Boolean| - departmentRole: String| - startDate: Date |
++----------+ | - currentTask: String | | - endDate: Date |
+             +----------+                | - totalCost: Double |
+                                         | - startCondition: String |
+                                         | - endCondition: String |
+                                         | - status: ReservationStatus |
+                                         | - vehicleID: String |
+                                         | - paymentID: String |
                                          +------------------------+
-                                                     | 1..*
-                                                     |
-                                                     v 1
+                                         | + calculateTotal(      |
+                                         |   rate: Double,        |
+                                         |   days: Int): Double   |
+                                         | + signContract(        |
+                                         |   signature: Byte[]): Boolean |
+                                         | + recordCondition(     |
+                                         |   damage: String,      |
+                                         |   isStartCondition: Boolean): Boolean |
+                                         | + cancel(): Boolean    |
                                          +------------------------+
-                                         |        Vehicle         |
+                                                    | 1
+                                                    |
+                                                    v
+                                         +------------------------+
+                                         |         Vehicle        |
                                          +------------------------+
                                          | - vehicleID: String    |
                                          | - make: String         |
+                                         | - model: String        |
                                          | - status: VehicleStatus|
+                                         | - latitude: Double     |
+                                         | - longitude: Double    |
+                                         +------------------------+
+                                         | + setMaintenance(      |
+                                         |   status: VehicleStatus,|
+                                         |   notes: String): Boolean |
+                                         | + isAvailable(         |
+                                         |   start: Date, end: Date): Boolean |
                                          +------------------------+
 
++------------------------+
+|        Contract        |
++------------------------+
+| - contractID: String   |
+| - reservationID: String|
+| - documentURI: String  |
+| - signedAt: Date       |
++------------------------+
+| + generate(reservationID: String): Boolean |
+| + recordSignature(signature: Byte[]): Boolean |
+| + retrieveDocument(): String |
++------------------------+
+```
 
-'''
+Class relationships: User is the parent class for Customer and Employee,
+so both share the account fields and login operations. A Customer can
+make multiple RentalReservations, and each reservation belongs to one
+customer. Each reservation is for one Vehicle; the same vehicle may be
+used in different reservations over time, but confirmed reservations
+cannot overlap. A reservation uses one PaymentMethod, while a customer
+may have more than one saved payment method. Each reservation has a
+Contract containing the rental agreement and a reference to its stored
+document.
+
+------------------------------------------------------------------------
 
 ## Description of Classes, Attributes, and Operations
 
 ### 1. User (Parent Class)
-* **Attributes:** `userID: String`, `email: String`, `passwordHash: String`
-* **Operations:** `login(email: String, password: String): Boolean`, `verifyEmail(code: String): Boolean`
+
+-   **Purpose:** Stores shared account information and provides common
+    sign-in and email verification.
+-   **Attributes:** `userID: String`, `email: String`,
+    `passwordHash: String`
+    -   `userID` is the unique account identifier.
+    -   `email` is the user's email address.
+    -   `passwordHash` stores a secure hash of the password, not the
+        original password.
+-   **Operations:**
+    -   `login(email: String, password: String): Boolean` --- checks the
+        submitted credentials and returns whether sign-in succeeds.
+    -   `verifyEmail(code: String): Boolean` --- checks the verification
+        code and returns whether the email address is verified.
 
 ### 2. Customer (Extends User)
-* **Attributes:** `phoneNumber: String`, `is2FAEnabled: Boolean`
-* **Operations:** `enable2FA(secret: String): Boolean`, `searchNearbyVehicles(lat: Double, long: Double): List<Vehicle>`
+
+-   **Purpose:** Represents a customer who searches for vehicles and
+    makes rental reservations.
+-   **Attributes:** `phoneNumber: String`, `is2FAEnabled: Boolean`
+    -   `phoneNumber` stores the customer's contact number.
+    -   `is2FAEnabled` indicates whether two-factor authentication is
+        enabled.
+-   **Operations:**
+    -   `enable2FA(secret: String): Boolean` --- sets up two-factor
+        authentication using the setup secret and returns whether setup
+        succeeds.
+    -   `searchNearbyVehicles(lat: Double, long: Double): List<Vehicle>`
+        --- finds vehicles near the provided latitude and longitude and
+        returns matching vehicles.
 
 ### 3. Employee (Extends User)
-* **Attributes:** `employeeID: String`, `departmentRole: String`, `currentTask: String`
-* **Operations:** `updateVehicleStatus(vehicleID: String, status: String): Void`, `reviewContract(resID: String): Contract`
+
+-   **Purpose:** Represents a BeAvis employee who can manage fleet
+    information and review rental contracts.
+-   **Attributes:** `employeeID: String`, `departmentRole: String`,
+    `currentTask: String`
+    -   `employeeID` is the unique identifier assigned to the employee.
+    -   `departmentRole` describes the employee's role and helps
+        determine which actions they can perform.
+    -   `currentTask` describes the employee's current assigned task.
+-   **Operations:**
+    -   `updateVehicleStatus(vehicleID: String, status: VehicleStatus): Boolean`
+        --- changes the status of a vehicle and returns whether the
+        update succeeds.
+    -   `reviewContract(resID: String): Contract` --- retrieves the
+        contract for a reservation so the employee can review it.
 
 ### 4. Vehicle
-* **Attributes:** `vehicleID: String`, `make: String`, `model: String`, `status: String`, `latitude: Double`, `longitude: Double`, 
-* **Operations:** `setMaintenance(status: String, notes: String): Void`, `isAvailable(start: Date, end: Date): Boolean`
+
+-   **Purpose:** Represents a vehicle in the BeAvis fleet and tracks its
+    identifying information, location, condition, and availability.
+-   **Attributes:** `vehicleID: String`, `make: String`,
+    `model: String`, `status: VehicleStatus`, `latitude: Double`,
+    `longitude: Double`
+    -   `vehicleID` uniquely identifies the vehicle.
+    -   `make` and `model` identify the vehicle.
+    -   `status` records whether the vehicle is available, reserved, or
+        in maintenance.
+    -   `latitude` and `longitude` record the vehicle's location.
+-   **Operations:**
+    -   `setMaintenance(status: VehicleStatus, notes: String): Boolean`
+        --- updates the vehicle's maintenance status and notes,
+        returning whether the update succeeds.
+    -   `isAvailable(start: Date, end: Date): Boolean` --- checks
+        whether the vehicle is available for the full requested date
+        range.
 
 ### 5. RentalReservation
-* **Attributes:** `reservationID: String`, `startDate: Date`, `endDate: Date`, `totalCost: Double`, `startCondition: String`, `endCondition: String`
-* **Operations:** `calculateTotal(rate: Double, days: Int): Double`, `signContract(signature: Byte[]): Boolean`, `conditionControl(damage: String): Void`
 
----
+-   **Purpose:** Represents a customer's request to rent a vehicle for a
+    set period.
+-   **Attributes:** `reservationID: String`, `startDate: Date`,
+    `endDate: Date`, `totalCost: Double`, `startCondition: String`,
+    `endCondition: String`, `status: ReservationStatus`,
+    `vehicleID: String`, `paymentID: String`
+    -   `reservationID` uniquely identifies the reservation.
+    -   `startDate` and `endDate` specify when the rental begins and
+        ends.
+    -   `totalCost` stores the calculated rental price.
+    -   `startCondition` and `endCondition` record the vehicle's
+        condition at pickup and return.
+    -   `status` records whether the reservation is pending, confirmed,
+        cancelled, or completed.
+    -   `vehicleID` identifies the reserved vehicle, and `paymentID`
+        identifies the payment method selected.
+-   **Operations:**
+    -   `calculateTotal(rate: Double, days: Int): Double` --- calculates
+        the rental cost from the daily rate and number of days.
+    -   `signContract(signature: Byte[]): Boolean` --- submits the
+        customer's electronic signature for the rental contract and
+        returns whether it is recorded successfully.
+    -   `recordCondition(damage: String, isStartCondition: Boolean): Boolean`
+        --- records condition or damage notes for pickup or return,
+        based on the Boolean value.
+    -   `cancel(): Boolean` --- cancels the reservation when
+        cancellation is allowed by the system's rules.
+
+### 6. PaymentMethod
+
+-   **Purpose:** Represents a customer's saved payment method for rental
+    payments.
+-   **Attributes:** `paymentID: String`, `cardToken: String`,
+    `billingPostalCode: String`
+    -   `paymentID` uniquely identifies the saved payment method.
+    -   `cardToken` is a token from the payment provider used to
+        reference the payment method without storing the full card
+        number.
+    -   `billingPostalCode` is the postal code associated with the
+        payment method.
+-   **Operations:**
+    -   `validateToken(): Boolean` --- checks whether the payment token
+        is valid for use.
+    -   `updateBillingAddress(postalCode: String): Boolean` --- updates
+        the billing postal code and returns whether the update succeeds.
+
+### 7. Contract
+
+-   **Purpose:** Represents the rental agreement associated with a
+    reservation.
+-   **Attributes:** `contractID: String`, `reservationID: String`,
+    `documentURI: String`, `signedAt: Date`
+    -   `contractID` uniquely identifies the contract.
+    -   `reservationID` identifies the reservation covered by the
+        contract.
+    -   `documentURI` points to the encrypted stored contract document.
+    -   `signedAt` records when the contract was signed.
+-   **Operations:**
+    -   `generate(reservationID: String): Boolean` --- creates the
+        rental contract using the reservation's details.
+    -   `recordSignature(signature: Byte[]): Boolean` --- records the
+        electronic signature and signing event.
+    -   `retrieveDocument(): String` --- returns the document reference
+        for an authorized user.
+
+### Supporting Types
+
+-   `VehicleStatus` --- represents vehicle states such as `AVAILABLE`,
+    `RESERVED`, and `MAINTENANCE`.
+-   `ReservationStatus` --- represents reservation states such as
+    `PENDING`, `CONFIRMED`, `CANCELLED`, and `COMPLETED`.
+-   `Date` --- represents the date and time for a rental or signature
+    event.
+-   `Byte[]` --- represents the electronic signature data.
+
+------------------------------------------------------------------------
 
 ## Development Plan and Timeline
 
-| Task Name | Assigned To | Completion Date |
-| :--- | :--- | :--- |
-| Requirements & Design Spec | Alec, Vunsh, Gabe, Meshach, Phong | Week 6 |
-| Database & Login API | Alec & Vunsh | Week 9 |
-| GPS & Fleet Search API | Gabe & Meshach & Phong| Week 11 |
-| Contracts & Payment Tokenization | Phong & Alec | Week 13 |
-| Mobile & Web Frontend UI | Vunsh & Gabe | Week 14 |
-| Final Testing & Report Submission | All Team Members | Week 16 |
-  
+  -----------------------------------------------------------------------
+  Task Name               Assigned To             Completion Date
+  ----------------------- ----------------------- -----------------------
+  Requirements & Design   Alec, Vunsh, Gabe,      Week 6
+  Spec                    Meshach, Phong          
+
+  Database & Login API    Alec & Vunsh            Week 9
+
+  GPS & Fleet Search API  Gabe & Meshach & Phong  Week 11
+
+  Contracts & Payment     Phong & Alec            Week 13
+  Tokenization                                    
+
+  Mobile & Web Frontend   Vunsh & Gabe            Week 14
+  UI                                              
+
+  Final Testing & Report  All Team Members        Week 16
+  Submission                                      
+  -----------------------------------------------------------------------
