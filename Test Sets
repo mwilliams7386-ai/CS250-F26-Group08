@@ -1,9 +1,42 @@
-Test Set 1:
+Test Set 1: Make a Rental
+Unit Test: 
+  Vehicle isAvailable(start: Date, end: Date): Boolean
+    Vehicle v
+    v.vehicleID = "V100"
+    v.locationID = "L1"
+    v.status = AVAILABLE
+    
+    If (v.isAvailable(Oct 25, 2026, Oct 27, 2026) == true)
+           Return PASS
+    Else
+           Return FAIL
 
+Integration Test: 
+  Location getAvailableVehicles(start: Date, end: Date): List<Vehicle>
+    Location loc
+    loc.locationID = "L1"
+    
+    Vehicle v1
+    v1.locationID = "L1"
+    v1.status = AVAILABLE
+    
+    Vehicle v2
+    v2.locationID = "L1"
+    v2.status = MAINTENANCE
+    
+    List<Vehicle> result = loc.getAvailableVehicles(Oct 25, 2026, Oct 27, 2026)
+    
+    If (result contains v1 AND result does not contain v2)
+           Return PASS
+    Else
+           Return FAIL
 
-
-
-
+System Test
+    A customer opens the BeAvis app and logs in. They allow location access and select the closest 
+  BeAvis location from the search results. They choose a Toyota Camry for October 25 to October 27, 
+  2026, at $45 per day. The app shows a total of $135 for 3 days. They select their saved payment 
+  method and confirm. The reservation appears in their account with status PENDING until the 
+  contract is signed. 
 
 
 
