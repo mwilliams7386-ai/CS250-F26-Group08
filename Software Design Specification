@@ -63,78 +63,93 @@ are represented by a payment token rather than a full card number.
 
 UML Class Diagram
 
-``` text
-+------------------------+           1       +------------------------+
-|          User          |-------------------|     PaymentMethod      |
-+------------------------+                    +------------------------+
-| - userID: String       |                    | - paymentID: String    |
-| - email: String        |                    | - cardToken: String    |
-| - passwordHash: String |                    | - billingPostalCode: String |
-+------------------------+                    +------------------------+
-| + login(email: String, |                    | + validateToken(): Boolean |
-|   password: String): Boolean               | + updateBillingAddress( |
-| + verifyEmail(code: String): Boolean       |   postalCode: String): Boolean |
-+------------------------+                    +------------------------+
-          ^                                               ^
-          | (Inheritance)                                 | used by
-     +----+-----+                                         |
-     |          |                                         |
-+----------+ +----------+  1        0..* +------------------------+
-| Customer | | Employee |----------------|   RentalReservation    |
-+----------+ +----------+                +------------------------+
-| - phoneNumber: String| | - employeeID: String | - reservationID: String |
-| - is2FAEnabled: Boolean| - departmentRole: String| - startDate: Date |
-+----------+ | - currentTask: String | | - endDate: Date |
-             +----------+                | - totalCost: Double |
-                                         | - startCondition: String |
-                                         | - endCondition: String |
-                                         | - status: ReservationStatus |
-                                         | - vehicleID: String |
-                                         | - paymentID: String |
-                                         +------------------------+
-                                         | + calculateTotal(      |
-                                         |   rate: Double,        |
-                                         |   days: Int): Double   |
-                                         | + signContract(        |
-                                         |   signature: Byte[]): Boolean |
-                                         | + recordCondition(     |
-                                         |   damage: String,      |
-                                         |   isStartCondition: Boolean): Boolean |
-                                         | + cancel(): Boolean    |
-                                         +------------------------+
-                                                    | 1
-                                                    |
-                                                    v
-                                         +------------------------+
-                                         |         Vehicle        |
-                                         +------------------------+
-                                         | - vehicleID: String    |
-                                         | - make: String         |
-                                         | - model: String        |
-                                         | - status: VehicleStatus|
-                                         | - latitude: Double     |
-                                         | - longitude: Double    |
-                                         +------------------------+
-                                         | + setMaintenance(      |
-                                         |   status: VehicleStatus,|
-                                         |   notes: String): Boolean |
-                                         | + isAvailable(         |
-                                         |   start: Date, end: Date): Boolean |
-                                         +------------------------+
-
-+------------------------+
-|        Contract        |
-+------------------------+
-| - contractID: String   |
-| - reservationID: String|
-| - documentURI: String  |
-| - signedAt: Date       |
-+------------------------+
-| + generate(reservationID: String): Boolean |
-| + recordSignature(signature: Byte[]): Boolean |
-| + retrieveDocument(): String |
-+------------------------+
-```
+                        +---------------------------------------+
+                        |                  User                 |            +------------------------+
+                        +---------------------------------------+            |      ChatMessage       |
+                        | - userID: String                      |            +------------------------+
+                        | - email: String                       |            | - messageID: String    |
+                        | - passwordHash: String                |            | - senderID: String     |
+                        | - is2FAEnabled: Boolean               | 1     0..* | - recipientID: String  |
+                        +---------------------------------------+------------| - text: String         |
+                        | + login(email: String,                |    sends   | - sentAt: Date         |
+                        |     password: String): Boolean        |            +------------------------+
+                        | + verifyEmail(code: String): Boolean  |            | + send(): Boolean      |
+                        | + enable2FA(secret: String): Boolean  |            +------------------------+
+                        +---------------------------------------+
+                                            ^
+                                            | (inheritance)
+                                            |
+                   +------------------------+--------------------------+
+                   |                                                   |
++--------------------------------------+              +----------------------------------+
+|               Employee               |              |             Customer             |
++--------------------------------------+              +----------------------------------+
+| - employeeID: String                 |              | - phoneNumber: String            |
+| - departmentRole: String             |              +----------------------------------+
+| - currentTask: String                |              | + searchNearbyLocations(         |
++--------------------------------------+              |     lat: Double, long: Double):  |
+| + lookUpCustomer(query: String):     |              |     List<Location>               |
+|     Customer                         |              +----------------------------------+
+| + reviewContract(resID: String):     |                      | 1                   | 1
+|     Contract                         |                      |                     |
+| + updateVehicleStatus(               |                      |                     |
+|     vehicleID: String,               |                      |                     |
+|     status: VehicleStatus): Boolean  |                      |                     |
++--------------------------------------+                      |                     | makes
+                              saves                           |                     |
+                    +-----------------------------------------+                     |
+                    |                                                               |
+                    |                                                               |
+                    | 0..*                                                          | 0..*
++-----------------------------------+                 +------------------------------------+
+|           PaymentMethod           |                 |         RentalReservation          |
++-----------------------------------+                 +------------------------------------+
+| - paymentID: String               |                 | - reservationID: String            |
+| - customerID: String              |                 | - customerID: String               |
+| - type: PaymentType               | 1          0..* | - vehicleID: String                |
+| - paymentToken: String            |-----------------| - paymentID: String                |
+| - billingPostalCode: String       |     pays for    | - startDate: Date                  |
++-----------------------------------+                 | - endDate: Date                    |
+| + validateToken(): Boolean        |                 | - totalCost: Double                |
+| + updateBillingAddress(           |                 | - startCondition: String           |
+|     postalCode: String): Boolean  |                 | - endCondition: String             |
++-----------------------------------+                 | - status: ReservationStatus        |
+                                                      +------------------------------------+
+                                                      | + calculateTotal(rate: Double,     |
++--------------------------------------+              |     days: Int): Double             |
+|               Contract               |              | + signContract(                    |
++--------------------------------------+              |     signature: Byte[]): Boolean    |
+| - contractID: String                 | 1          1 | + recordCondition(damage: String,  |
+| - reservationID: String              |--------------|     isStartCondition: Boolean):    |
+| - documentURI: String                |    covers    |     Boolean                        |
+| - signedAt: Date                     |              | + cancel(): Boolean                |
++--------------------------------------+              +------------------------------------+
+| + generate(                          |                                            | 0..*
+|     reservationID: String): Boolean  |                                            |
+| + recordSignature(                   |                                            |
+|     signature: Byte[]): Boolean      |                                            |
+| + retrieveDocument(): String         |                                            |
++--------------------------------------+                                            | reserves
+                                                                                    |
+                                                                                    |
+                                                                                    |
+                                                                                    |
+                                                                                    | 1
++-----------------------------------+                 +------------------------------+
+|              Location             |                 |           Vehicle            |
++-----------------------------------+                 +------------------------------+
+| - locationID: String              |                 | - vehicleID: String          |
+| - name: String                    |                 | - locationID: String         |
+| - address: String                 | 1          0..* | - make: String               |
+| - latitude: Double                |-----------------| - model: String              |
+| - longitude: Double               |        has      | - status: VehicleStatus      |
++-----------------------------------+                 +------------------------------+
+| + getAvailableVehicles(           |                 | + setMaintenance(            |
+|     start: Date, end: Date):      |                 |     status: VehicleStatus,   |
+|     List<Vehicle>                 |                 |     notes: String): Boolean  |
+| + getDirections(fromLat: Double,  |                 | + isAvailable(start: Date,   |
+|     fromLong: Double): String     |                 |     end: Date): Boolean      |
++-----------------------------------+                 +------------------------------+
 
 Class relationships: User is the parent class for Customer and Employee,
 so both share the account fields and login operations. A Customer can
@@ -160,11 +175,16 @@ document.
     -   `email` is the user's email address.
     -   `passwordHash` stores a secure hash of the password, not the
         original password.
+    -   `is2FAEnabled` indicates whether two-factor authentication is
+        enabled.
 -   **Operations:**
     -   `login(email: String, password: String): Boolean` --- checks the
         submitted credentials and returns whether sign-in succeeds.
     -   `verifyEmail(code: String): Boolean` --- checks the verification
         code and returns whether the email address is verified.
+    -   `enable2FA(secret: String): Boolean` --- sets up two-factor
+        authentication using the setup secret and returns whether setup
+        succeeds.
 
 ### 2. Customer (Extends User)
 
@@ -172,12 +192,7 @@ document.
     makes rental reservations.
 -   **Attributes:** `phoneNumber: String`, `is2FAEnabled: Boolean`
     -   `phoneNumber` stores the customer's contact number.
-    -   `is2FAEnabled` indicates whether two-factor authentication is
-        enabled.
 -   **Operations:**
-    -   `enable2FA(secret: String): Boolean` --- sets up two-factor
-        authentication using the setup secret and returns whether setup
-        succeeds.
     -   `searchNearbyVehicles(lat: Double, long: Double): List<Vehicle>`
         --- finds vehicles near the provided latitude and longitude and
         returns matching vehicles.
