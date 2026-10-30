@@ -316,6 +316,22 @@ document.
     event.
 -   `Byte[]` --- represents the electronic signature data.
 
+
+---
+
+## Data Management Strategy
+
+### 1. Database Architecture & Logical Data Split
+For the BeAvis Car Rental System, our group selected a **hybrid polyglot persistence model** using both a Relational Database (**PostgreSQL**) and a Document NoSQL Database (**MongoDB**). This split balances data integrity for financial transactions with rapid query performance for mobile/web browsing and kiosk displays.
+
+* **Relational Database (PostgreSQL):** Handles mission-critical transactional data requiring strict ACID compliance and row-level locking.
+  * *Stored Entities:* User accounts (`User`, `Customer`, `Employee`), active reservations (`RentalReservation`), vehicle real-time locks, payment tokens (`PaymentMethod`), and legal signature metadata (`Contract`).
+  * *Rationale:* Foreign key constraints and transaction isolation prevent double-booking identical vehicles during simultaneous customer checkouts.
+
+* **Document Database (MongoDB):** Handles high-frequency, read-heavy catalog data.
+  * *Stored Entities:* Vehicle catalog metadata (`Vehicle`), branch locations (`Location`), available vehicle features, image galleries, and location-based search indices.
+  * *Rationale:* Location data and vehicle specs are embedded directly into document structures, allowing mobile app and web users to search nearby vehicles with a single document query without complex multi-table SQL joins.
+
 ------------------------------------------------------------------------
 
 ## Development Plan and Timeline
