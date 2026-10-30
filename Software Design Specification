@@ -45,14 +45,17 @@ Architectural diagram of all major components
                               |
                      [ Data Access Layer ]
                               |
-        +---------------------+----------------------+
-        |                     |                      |
-  [ PostgreSQL ]         [ MongoDB ]     [ Encrypted PDF Storage ]
-  - User accounts        - Vehicle catalog   - Signed rental
-  - Reservations         - Branch locations    contracts
-  - Payment tokens       - Images/features
-  - Contract metadata    - Geo search index
-  - Vehicle locks
+           +---------------------+----------------------+----------------------+
+         |                     |                      |                      |
+   [ PostgreSQL ]         [ MongoDB ]       [ Encrypted PDF Storage ]
+   - User accounts        - Vehicle catalog   - Signed rental contracts
+   - Reservations         - Branch locations  - Rental agreement PDFs
+   - Payment tokens       - Images/features   - Electronic signatures
+   - Contract metadata    - Geo search index  - Secure document backups
+   - Vehicle locks        - Vehicle details   - Document access control
+   - Employee records     - Vehicle categories- Encrypted file storage
+   - Rental transactions  - Vehicle images    - Contract retrieval
+   - Reservation status   - Location data     - Signature verification
 ```
 
 Architecture explanation: The mobile app, web app, and employee
