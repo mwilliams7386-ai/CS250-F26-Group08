@@ -31,23 +31,28 @@ Software Architecture Overview
 Architectural diagram of all major components
 
 ``` text
-[ Mobile App / Web App ]             [ Employee Interface ]
-         |                                      |
-         +--------------- HTTPS / REST --------+
-                            |
-                  [ API Gateway / Router ]
-                            |
-             +--------------+--------------+
-             |              |              |
-          [Auth]          [Fleet]       [Rentals]
-             |              |              |
-             +--------------+--------------+
-                            |
-                    [ Data Access Layer ]
-                            |
-                [ PostgreSQL Database ]
-                            |
-                [ Encrypted PDF Storage ]
+[ Mobile App / Web App ]                 [ Employee Interface ]
+         |                                          |
+         +---------------- HTTPS / REST ------------+
+                              |
+                    [ API Gateway / Router ]
+                              |
+             +----------------+----------------+
+             |                |                |
+          [Auth]           [Fleet]         [Rentals]
+             |                |                |
+             +----------------+----------------+
+                              |
+                     [ Data Access Layer ]
+                              |
+        +---------------------+----------------------+
+        |                     |                      |
+  [ PostgreSQL ]         [ MongoDB ]     [ Encrypted PDF Storage ]
+  - User accounts        - Vehicle catalog   - Signed rental
+  - Reservations         - Branch locations    contracts
+  - Payment tokens       - Images/features
+  - Contract metadata    - Geo search index
+  - Vehicle locks
 ```
 
 Architecture explanation: The mobile app, web app, and employee
