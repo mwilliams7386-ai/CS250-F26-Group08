@@ -175,7 +175,7 @@ I1 shows the three components work together. I2 shows the reservation respects C
 
 ### System test: customer signs, employee reviews
 
-Preconditions: reservation R200 is PENDING for the test customer; a test employee account exists.
+Preconditions: reservation R200 is PENDING for the test customer; a test employee account exists
 
 | Step | Actor | Action | Expected |
 | --- | --- | --- | --- |
